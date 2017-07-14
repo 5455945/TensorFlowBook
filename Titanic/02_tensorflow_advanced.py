@@ -154,3 +154,19 @@ with tf.Session() as sess:
     })
 
     submission.to_csv("titanic-submission.csv", index=False)
+'''
+Epoch: 0001, loss=615.245625108
+Accuracy on validation set: 0.586592138
+...
+Epoch: 0009, loss=610.188485358
+Accuracy on validation set: 0.586592138
+Epoch: 0010, loss=609.152617797
+Accuracy on validation set: 0.586592197
+Training complete!
+Restoring from checkpoint: ./ckpt_dir\logistic.ckpt-9
+# 生成一下文件
+# .\titanic-submission.csv
+# .\logs\events.out.tfevents.1498818459.LFY_P50
+# .\ckpt_dir\logistic.ckpt*
+# .\ckpt_dir\checkpoint
+'''

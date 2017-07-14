@@ -35,16 +35,16 @@ def trim(s):
     :param s: some python string
     :return: the trimmed string
     """
-    if not (isinstance(s, unicode) or isinstance(s, str)):
+    if not (isinstance(s, str)):
         return s
-    unistr = s.decode('utf8') if type(s) != unicode else s
-    unistr = unistr.strip()
+    # unistr = s.decode('utf8') if type(s) != unicode else s
+    unistr = s.strip()
     if not unistr:
         return ''
     trimmed_str = []
     if unistr[0] != ' ':
         trimmed_str.append(unistr[0])
-    for ind in xrange(1, len(unistr) - 1):
+    for ind in range(1, len(unistr) - 1):
         prev_char = unistr[ind - 1] if len(trimmed_str) == 0 else trimmed_str[-1]
         cur_char = unistr[ind]
         maybe_trim = cur_char == ' '
@@ -101,7 +101,7 @@ class Chatbot():
         if len(token_ids) == 0:
             _LOGGER.error('lens of token ids of sentence %s is 0' % enquiry)
         # Which bucket does it belong to?
-        bucket_id = min([b for b in xrange(len(_buckets))
+        bucket_id = min([b for b in range(len(_buckets))
                          if _buckets[b][0] > len(token_ids)])
         # Get a 1-element batch to feed the sentence to the model.
         encoder_inputs, decoder_inputs, target_weights = self.model.get_batch(
@@ -130,4 +130,14 @@ class Chatbot():
 if __name__ == "__main__":
     m = Chatbot(SEQ2SEQ_MODEL_DIR + '/train/')
     response = m.generate_answer(u'我知道你不知道我知道你不知道我说的是什么意思')
-    print response
+    print(response)
+    response = m.generate_answer(u'你好')
+    print(response)
+    response = m.generate_answer(u'吃了吗')
+    print(response)
+    response = m.generate_answer(u'回去吧')
+    print(response)
+    response = m.generate_answer('超级兰博基尼公交车')
+    print(response)
+    response = m.generate_answer('hello world!')
+    print(response)

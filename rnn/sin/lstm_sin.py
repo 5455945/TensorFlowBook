@@ -4,9 +4,7 @@ import random
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib.rnn.python.ops import core_rnn
-from tensorflow.contrib.rnn.python.ops import core_rnn_cell
-
+from tensorflow.contrib import rnn
 
 def build_data(n):
     xs = []
@@ -27,7 +25,6 @@ def build_data(n):
     test_x = np.array(xs[1500:])
     test_y = np.array(ys[1500:])
     return (train_x, train_y, test_x, test_y)
-
 
 length = 10
 time_step_size = length
@@ -57,10 +54,10 @@ def seq_predict_model(X, w, b, time_step_size, vector_size):
     X = tf.split(X, time_step_size, 0)
 
     # LSTM model with state_size = 10
-    cell = core_rnn_cell.BasicLSTMCell(num_units=10,
+    cell = rnn.BasicLSTMCell(num_units=10,
                                        forget_bias=1.0,
                                        state_is_tuple=True)
-    outputs, _states = core_rnn.static_rnn(cell, X, dtype=tf.float32)
+    outputs, _states = rnn.static_rnn(cell, X, dtype=tf.float32)
 
     # Linear activation
     return tf.matmul(outputs[-1], w) + b, cell.state_size
@@ -101,3 +98,17 @@ with tf.Session() as sess:
         pred = sess.run(pred_y, feed_dict={X: x_value})
         for i in range(len(pred)):
             print(pred[i], y_value[i], pred[i] - y_value[i])
+'''
+(1500, 10, 1) (1500, 1) (500, 10, 1) (500, 1)
+Run 0 0.501963
+Run 1 0.490687
+Run 2 0.328985
+...
+Run 48 0.000195758
+Run 49 0.000305991
+[ 0.16057003] [ 0.16943663] [-0.00886661]
+[ 0.25243664] [ 0.24671422] [ 0.00572242]
+...
+[-0.22830085] [-0.22997938] [ 0.00167852]
+[-0.80274117] [-0.82659579] [ 0.02385462]
+'''

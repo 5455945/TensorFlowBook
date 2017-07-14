@@ -61,7 +61,9 @@ import time
 import numpy as np
 import tclm_reader
 import tensorflow as tf
-from tensorflow.contrib.rnn.python.ops import core_rnn_cell
+#from tensorflow.contrib.rnn.python.ops import core_rnn_cell
+#from tensorflow.contrib.rnn.python.ops import lstm_ops
+from tensorflow.contrib import rnn
 
 flags = tf.flags
 logging = tf.logging
@@ -106,12 +108,12 @@ class PTBModel(object):
         # Slightly better results can be obtained with forget gate biases
         # initialized to 1 but the hyperparameters of the model would need to be
         # different than reported in the paper.
-        lstm_cell = core_rnn_cell.BasicLSTMCell(num_units=size,
-                                                state_is_tuple=True)
+        lstm_cell = rnn.BasicLSTMCell(num_units=size, state_is_tuple=True)
+        #lstm_cell = core_rnn_cell.BasicLSTMCell(num_units=size, state_is_tuple=True)
         if is_training and config.keep_prob < 1:
             lstm_cell = tf.contrib.rnn.DropoutWrapper(
                 lstm_cell, output_keep_prob=config.keep_prob)
-        cell = core_rnn_cell.MultiRNNCell(
+        cell = rnn.MultiRNNCell(
             [lstm_cell] * config.num_layers, state_is_tuple=True)
 
         self._initial_state = cell.zero_state(batch_size, data_type())

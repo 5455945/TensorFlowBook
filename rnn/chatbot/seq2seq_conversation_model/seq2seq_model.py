@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import random
-
+import copy
 import numpy as np
 import tensorflow as tf
 from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -100,13 +100,13 @@ class Seq2SeqModel(object):
             b = tf.get_variable("proj_b", [self.target_vocab_size], dtype=dtype)
             output_projection = (w, b)
 
-            def sampled_loss(labels, inputs):
+            def sampled_loss(labels, logits):
                 labels = tf.reshape(labels, [-1, 1])
                 # We need to compute the sampled_softmax_loss using 32bit floats to
                 # avoid numerical instabilities.
                 local_w_t = tf.cast(w_t, tf.float32)
                 local_b = tf.cast(b, tf.float32)
-                local_inputs = tf.cast(inputs, tf.float32)
+                local_inputs = tf.cast(logits, tf.float32)
                 return tf.cast(
                     tf.nn.sampled_softmax_loss(
                         weights=local_w_t,
@@ -129,10 +129,11 @@ class Seq2SeqModel(object):
 
         # The seq2seq function: we use embedding for the input and attention.
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
+            tmp_cell = copy.deepcopy(cell)
             return tf.contrib.legacy_seq2seq.embedding_attention_seq2seq(
                 encoder_inputs,
                 decoder_inputs,
-                cell,
+                tmp_cell,
                 num_encoder_symbols=source_vocab_size,
                 num_decoder_symbols=target_vocab_size,
                 embedding_size=size,

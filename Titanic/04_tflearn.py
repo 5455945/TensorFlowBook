@@ -55,3 +55,23 @@ submission = pd.DataFrame({
 })
 
 submission.to_csv("titanic-submission.csv", index=False)
+'''
+---------------------------------
+Run id: 0P7SI9
+Log directory: /tmp/tflearn_logs/
+---------------------------------
+Training samples: 801
+Validation samples: 90
+--
+Training Step: 1  | time: 0.295s
+| Adam | epoch: 001 | loss: 0.00000 -- iter: 064/801
+Training Step: 2  | total loss: 0.62647 | time: 0.299s
+| Adam | epoch: 001 | loss: 0.62647 -- iter: 128/801
+...
+Training Step: 129  | total loss: 0.53789 | time: 0.052s
+| Adam | epoch: 010 | loss: 0.53789 -- iter: 768/801
+Training Step: 130  | total loss: 0.53268 | time: 1.059s
+| Adam | epoch: 010 | loss: 0.53268 | val_loss: 0.49138 -- iter: 801/801
+--
+Accuracy on train set: 0.790123456
+'''

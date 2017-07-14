@@ -97,3 +97,13 @@ with tf.Session() as sess:
     })
 
     submission.to_csv("titanic-submission.csv", index=False)
+'''
+Epoch: 0001, total loss=1332.714233560
+Epoch: 0002, total loss=1080.481877883
+Epoch: 0003, total loss=1146.676006738
+...
+Epoch: 0009, total loss=1100.583975340
+Epoch: 0010, total loss=1091.225955000
+Accuracy on validation set: 0.586592197
+Accuracy on validation set (numpy): 0.586592197
+'''

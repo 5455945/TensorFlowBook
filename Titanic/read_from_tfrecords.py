@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-
 import tensorflow as tf
-
 
 def read_and_decode(train_files, num_threads=2, num_epochs=100,
                     batch_size=10, min_after_dequeue=10):
@@ -63,7 +61,6 @@ def train_with_queuerunner():
             coord.request_stop()
         # Wait for threads to finish.
         coord.join(threads)
-
 
 if __name__ == '__main__':
     train_with_queuerunner()

@@ -32,7 +32,7 @@ def basic_tokenizer(sentence):
     words = []
     for space_separated_fragment in sentence.strip().split():
         words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
-    return [w.decode('utf8') for w in words if w]
+    return [w for w in words if w]
 
 
 # forward maximum matching word segmentation
@@ -135,7 +135,7 @@ def initialize_vocabulary(vocabulary_path):
         rev_vocab = []
         with gfile.GFile(vocabulary_path, mode="r") as f:
             rev_vocab.extend(f.readlines())
-        rev_vocab = [line.strip().decode('utf8') for line in rev_vocab]
+        rev_vocab = [line.strip() for line in rev_vocab]
         vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
         return vocab, rev_vocab
     else:

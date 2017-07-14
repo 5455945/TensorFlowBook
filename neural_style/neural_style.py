@@ -53,7 +53,9 @@ def vgg19(input_image):
     for i, name in enumerate(layers):
         layer_type = name[:4]
         if layer_type == 'conv':
-            kernels, bias = weights[i][0][0][0][0]
+            # kernels, bias = weights[i][0][0][0][0] # 这里需要把第四维的索引修改为2
+            # 否则报错[ValueError: too many values to unpack (expected 2)]
+            kernels, bias = weights[i][0][0][2][0]
             # matconvnet weights: [width, height, in_channels, out_channels]
             # tensorflow weights: [height, width, in_channels, out_channels]
             kernels = np.transpose(kernels, (1, 0, 2, 3))
@@ -74,7 +76,6 @@ def content_loss(target_features, content_features):
     _, height, width, channel = content_features.get_shape().as_list()
     content_size = height * width * channel
     return tf.nn.l2_loss(target_features - content_features) / content_size
-
 
 def style_loss(target_features, style_features):
     _, height, width, channel = target_features.get_shape().as_list()
@@ -129,3 +130,16 @@ if __name__ == '__main__':
     content = Image.open(FLAGS.content_image)
     content = np.array(content).astype(np.float32) - 128.0
     stylize(style, content, FLAGS.learning_rate, FLAGS.epochs)
+'''
+# 需要在neural_style.py同级目录创建out目录，否则，在
+# Image.fromarray(image).save("out/neural_%d.jpg" % (i + 1))时会报错
+iter:0, loss:15626503.000000000
+iter:1, loss:14949413.000000000
+iter:2, loss:14318100.000000000
+iter:3, loss:13735171.000000000
+iter:4, loss:13194825.000000000
+...
+iter:497, loss:553536.812500000
+iter:498, loss:553092.062500000
+iter:499, loss:552648.937500000
+'''

@@ -4,9 +4,7 @@ import random
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib.rnn.python.ops import core_rnn
-from tensorflow.contrib.rnn.python.ops import core_rnn_cell
-
+from tensorflow.contrib import rnn
 
 def build_data(n):
     xs = []
@@ -28,7 +26,6 @@ def build_data(n):
     test_y = np.array(ys[1500:])
     return (train_x, train_y, test_x, test_y)
 
-
 length = 10
 time_step_size = length
 vector_size = 1
@@ -46,7 +43,6 @@ Y = tf.placeholder("float", [None, 1])
 W = tf.Variable(tf.random_normal([10, 1], stddev=0.01))
 B = tf.Variable(tf.random_normal([1], stddev=0.01))
 
-
 def seq_predict_model(X, w, b, time_step_size, vector_size):
     # input X shape: [batch_size, time_step_size, vector_size]
     # transpose X to [time_step_size, batch_size, vector_size]
@@ -56,13 +52,12 @@ def seq_predict_model(X, w, b, time_step_size, vector_size):
     # split X, array[time_step_size], shape: [batch_size, vector_size]
     X = tf.split(X, time_step_size, 0)
 
-    cell = core_rnn_cell.BasicRNNCell(num_units=10)
+    cell = rnn.BasicRNNCell(num_units=10)
     initial_state = tf.zeros([batch_size, cell.state_size])
-    outputs, _states = core_rnn.static_rnn(cell, X, initial_state=initial_state)
+    outputs, _states = rnn.static_rnn(cell, X, initial_state=initial_state)
 
     # Linear activation
     return tf.matmul(outputs[-1], w) + b, cell.state_size
-
 
 pred_y, _ = seq_predict_model(X, W, B, time_step_size, vector_size)
 loss = tf.square(tf.subtract(Y, pred_y))
@@ -98,3 +93,19 @@ with tf.Session() as sess:
         pred = sess.run(pred_y, feed_dict={X: x_value})
         for i in range(len(pred)):
             print(pred[i], y_value[i], pred[i] - y_value[i])
+'''
+(1500, 10, 1) (1500, 1) (500, 10, 1) (500, 1)
+Run 0 0.000285596
+Run 1 7.50029e-05
+Run 2 8.55531e-05
+...
+Run 48 4.05094e-05
+Run 49 2.30997e-05
+[ 0.60128832] [ 0.61017627] [-0.00888795]
+[ 0.77109075] [ 0.77846642] [-0.00737568]
+[ 0.41146952] [ 0.40745923] [ 0.00401029]
+...
+[ 0.98992503] [ 0.98445371] [ 0.00547131]
+[ 0.35108942] [ 0.34326224] [ 0.00782718]
+[-0.29042405] [-0.27972568] [-0.01069837]
+'''

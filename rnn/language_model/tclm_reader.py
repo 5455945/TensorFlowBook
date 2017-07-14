@@ -34,7 +34,7 @@ def get_file_suffix(file):
 def read_source_code_data(code_files):
     data = []
     for code_file in code_files:
-        file_r = open(code_file, 'r')
+        file_r = open(code_file, 'r', encoding='UTF-8')
         curr_data = []
         curr_data.append(BOF)
         for dataline in file_r:

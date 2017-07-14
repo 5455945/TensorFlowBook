@@ -34,13 +34,13 @@ def crop_image(image, shape):
         new_size[0] = shape[0]
     if new_size[1] < shape[0]:
         new_size[1] = shape[0]
-    resized_image = transform.resize(image, new_size)
+    resized_image = transform.resize(image, new_size, mode='constant')
     sample = np.asarray(resized_image) * 256
     if shape[0] < sample.shape[0] or shape[1] < sample.shape[1]:
         xx = int((sample.shape[0] - shape[0]))
         yy = int((sample.shape[1] - shape[1]))
-        x_start = xx / 2
-        y_start = yy / 2
+        x_start = int(xx / 2)
+        y_start = int(yy / 2)
         x_end = x_start + shape[0]
         y_end = y_start + shape[1]
         sample = sample[x_start:x_end, y_start:y_end, :]
@@ -82,7 +82,9 @@ def vgg19(input_image):
     for i, name in enumerate(layers):
         layer_type = name[:4]
         if layer_type == 'conv':
-            kernels, bias = weights[i][0][0][0][0]
+            # kernels, bias = weights[i][0][0][0][0] # 这里需要把第四维的索引修改为2
+            # 否则报错[ValueError: too many values to unpack (expected 2)]
+            kernels, bias = weights[i][0][0][2][0]
             # matconvnet weights: [width, height, in_channels, out_channels]
             # tensorflow weights: [height, width, in_channels, out_channels]
             kernels = np.transpose(kernels, (1, 0, 2, 3))
@@ -157,13 +159,13 @@ def train(style, contents, image_shape,
     with tf.Session() as sess:
         tf.global_variables_initializer().run()
         for i in range(epochs):
-            batches = len(contents) / batch_size
+            batches = int(len(contents) / batch_size)
             for batch in range(batches):
                 images = contents[batch * batch_size: (batch + 1) * batch_size]
                 _, loss = sess.run([train_op, cost],
                                    feed_dict={content_input: images})
                 print("iter:%d, batch:%d, loss:%.9f" % (i, batch, np.sum(loss)))
-        saver.save(sess, '%s_%s.ckpt' % (generator_name, style_name))
+        saver.save(sess, './%s_%s.ckpt' % (generator_name, style_name))
 
 
 if __name__ == '__main__':
